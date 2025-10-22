@@ -1,25 +1,30 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import ProfileHeader from '../components/ProfileHeader';
+import UserInfoCard from '../components/UserInfoCard';
+import NotificationSettings from '../components/NotificationSettings';
+import AccountActions from '../components/AccountActions';
 
 const ProfileScreen: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Perfil</Text>
-    </View>
+    <ScrollView 
+      style={styles.container}
+      bounces={false}
+      overScrollMode="never"
+      showsVerticalScrollIndicator={false}
+    >
+      <ProfileHeader />
+      <UserInfoCard />
+      <NotificationSettings />
+      <AccountActions />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0F3460',
+    backgroundColor: '#E8EBF0',
   },
 });
 
