@@ -22,7 +22,7 @@ const AlertsHeader: React.FC = () => {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#0F3460',
-    paddingTop: 50,
+    paddingTop: 60,
     paddingBottom: 20,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 24,
