@@ -19,7 +19,7 @@ const ProfileHeader: React.FC = () => {
 const styles = StyleSheet.create({
   header: {
     backgroundColor: '#0F3460',
-    paddingTop: 60,
+    paddingTop: 62,
     paddingBottom: 20,
     paddingHorizontal: 20,
     borderBottomLeftRadius: 24,

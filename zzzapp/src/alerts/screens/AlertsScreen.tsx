@@ -1,25 +1,26 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
+import AlertsHeader from '../components/AlertsHeader';
+import AlertsFilters from '../components/AlertsFilters';
 
 const AlertsScreen: React.FC = () => {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Alertas</Text>
-    </View>
+    <ScrollView 
+      style={styles.container}
+      bounces={false}
+      overScrollMode="never"
+      showsVerticalScrollIndicator={false}
+    >
+      <AlertsHeader />
+      <AlertsFilters />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#0F3460',
+    backgroundColor: '#E8EBF0',
   },
 });
 
