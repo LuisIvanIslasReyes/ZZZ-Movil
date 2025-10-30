@@ -1,13 +1,16 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { AuthContext } from '../../navigation/RootNavigator';
 
 const AccountActions: React.FC = () => {
+  const { logout } = useContext(AuthContext);
+
   return (
     <View style={styles.container}>
       <View style={styles.divider} />
       
-      <TouchableOpacity style={styles.actionButton}>
+      <TouchableOpacity style={styles.actionButton} onPress={logout}>
         <MaterialCommunityIcons name="logout" size={20} color="#EF4444" />
         <Text style={styles.actionTextDanger}>Cerrar Sesión</Text>
       </TouchableOpacity>

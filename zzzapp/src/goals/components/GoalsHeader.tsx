@@ -2,7 +2,11 @@ import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-const GoalsHeader: React.FC = () => {
+interface GoalsHeaderProps {
+  onNewGoalPress?: () => void;
+}
+
+const GoalsHeader: React.FC<GoalsHeaderProps> = ({ onNewGoalPress }) => {
   return (
     <View style={styles.header}>
       <View style={styles.headerLeft}>
@@ -12,7 +16,7 @@ const GoalsHeader: React.FC = () => {
           <Text style={styles.headerSubtitle}>Objetivos de salud y bienestar</Text>
         </View>
       </View>
-      <TouchableOpacity style={styles.newGoalButton}>
+      <TouchableOpacity style={styles.newGoalButton} onPress={onNewGoalPress}>
         <MaterialCommunityIcons name="plus" size={20} color="#FFFFFF" />
         <Text style={styles.newGoalText}>Nueva Meta</Text>
       </TouchableOpacity>
