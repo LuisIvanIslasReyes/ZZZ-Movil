@@ -16,7 +16,6 @@ const UserInfoCard: React.FC = () => {
   return (
     <>
       <View style={styles.profileCard}>
-        {/* User Info Header */}
         <View style={styles.userInfoHeader}>
           <View style={styles.userInfoLeft}>
             <Text style={styles.userName}>{userName}</Text>
@@ -26,14 +25,12 @@ const UserInfoCard: React.FC = () => {
             </View>
           </View>
           
-          {/* Edit Button */}
           <TouchableOpacity style={styles.editButton} onPress={() => setModalVisible(true)}>
             <MaterialCommunityIcons name="pencil" size={18} color="#0F3460" />
             <Text style={styles.editButtonText}>Editar</Text>
           </TouchableOpacity>
         </View>
 
-        {/* Info Sections */}
         <ProfileInfoItem
           iconName="briefcase-outline"
           label="Departamento"
