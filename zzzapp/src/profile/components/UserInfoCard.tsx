@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfileInfoItem from './ProfileInfoItem';
 import EditProfileModal from './EditProfileModal';
 import { useAuth } from '../../context/AuthContext';
-import { authService } from '../../services/authService';
+import { authService } from '../../auth/services/authService';
 
 const UserInfoCard: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);

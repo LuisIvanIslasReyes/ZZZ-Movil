@@ -70,9 +70,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
             </TouchableOpacity>
           </LinearGradient>
 
-          {/* Content */}
           <View style={styles.content}>
-            {/* First Name - Editable */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Nombre</Text>
               <View style={styles.inputWrapper}>
@@ -87,7 +85,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               </View>
             </View>
 
-            {/* Last Name - Editable */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Apellidos</Text>
               <View style={styles.inputWrapper}>
@@ -102,7 +99,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               </View>
             </View>
 
-            {/* Email - Read only */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Correo Electrónico</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
@@ -112,7 +108,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               </View>
             </View>
 
-            {/* Employee ID - Read only */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>ID de Empleado</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
@@ -122,7 +117,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               </View>
             </View>
 
-            {/* Department - Read only */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Departamento</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
@@ -132,7 +126,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               </View>
             </View>
 
-            {/* Location - Read only */}
             <View style={styles.inputContainer}>
               <Text style={styles.inputLabel}>Ubicación</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
@@ -143,7 +136,6 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
             </View>
           </View>
 
-          {/* Footer Buttons */}
           <View style={styles.footer}>
             <TouchableOpacity 
               style={styles.cancelButton} 

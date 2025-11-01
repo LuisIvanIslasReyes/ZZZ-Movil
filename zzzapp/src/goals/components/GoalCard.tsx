@@ -1,47 +1,76 @@
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Goal } from '../services/goalsService';
 
-const GoalCard: React.FC = () => {
+interface GoalCardProps {
+  goal: Goal;
+  onEdit?: (goal: Goal) => void;
+  onDelete?: (goalId: number) => void;
+}
+
+const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit, onDelete }) => {
+  // Mapeo de categorías a iconos
+  const categoryIcons: { [key: string]: string } = {
+    'steps': 'walk',
+    'heart_rate': 'heart-pulse',
+    'recovery': 'sleep',
+    'stress': 'head-lightbulb-outline',
+    'activity': 'run',
+    'hrv': 'chart-line-variant',
+    'sleep': 'power-sleep',
+    'productivity': 'briefcase-check',
+    'hydration': 'water',
+    'nutrition': 'food-apple',
+    'weight': 'scale-bathroom',
+    'exercise': 'dumbbell',
+  };
+
+  // Obtener el icono según la categoría
+  const icon = categoryIcons[goal.category] || 'target';
+  
+  // Calcular porcentaje de progreso
+  const progressPercentage = parseFloat(goal.progress_percentage) || 0;
+  const currentValue = parseFloat(goal.current_progress) || 0;
+  const targetValue = parseFloat(goal.target) || 0;
+
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <View style={styles.iconContainer}>
-            <MaterialCommunityIcons name="walk" size={24} color="#F97316" />
+            <MaterialCommunityIcons name={icon as any} size={24} color="#F97316" />
           </View>
           <View style={styles.headerInfo}>
-            <Text style={styles.title}>Pasos Diarios</Text>
-            <View style={styles.statusBadge}>
-              <Text style={styles.statusText}>En progreso</Text>
+            <Text style={styles.title}>{goal.title}</Text>
+            <View style={[styles.statusBadge, goal.is_completed && styles.completedBadge]}>
+              <Text style={[styles.statusText, goal.is_completed && styles.completedText]}>
+                {goal.is_completed ? 'Completada' : 'En progreso'}
+              </Text>
             </View>
           </View>
         </View>
-        <TouchableOpacity>
-          <MaterialCommunityIcons name="pencil" size={20} color="#718096" />
-        </TouchableOpacity>
+        {onEdit && (
+          <TouchableOpacity onPress={() => onEdit(goal)}>
+            <MaterialCommunityIcons name="pencil" size={20} color="#718096" />
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* Progress Section */}
       <View style={styles.progressSection}>
         <View style={styles.numbersRow}>
           <View style={styles.numbersContainer}>
-            <Text style={styles.currentValue}>6,420</Text>
-            <Text style={styles.targetValue}> / 8,000 pasos</Text>
+            <Text style={styles.currentValue}>{currentValue.toLocaleString()}</Text>
+            <Text style={styles.targetValue}> / {targetValue.toLocaleString()} {goal.unit}</Text>
           </View>
-          <Text style={styles.percentageText}>80%</Text>
+          <Text style={styles.percentageText}>{Math.round(progressPercentage)}%</Text>
         </View>
         
         {/* Progress Bar */}
         <View style={styles.progressBarContainer}>
-          <View style={[styles.progressBarFill, { width: '80%' }]} />
-        </View>
-        
-        {/* Streak */}
-        <View style={styles.streakContainer}>
-          <MaterialCommunityIcons name="fire" size={14} color="#F97316" />
-          <Text style={styles.streakText}>Racha: 5 días</Text>
+          <View style={[styles.progressBarFill, { width: `${Math.min(progressPercentage, 100)}%` }]} />
         </View>
       </View>
     </View>
@@ -94,10 +123,16 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignSelf: 'flex-start',
   },
+  completedBadge: {
+    backgroundColor: '#D1FAE5',
+  },
   statusText: {
     fontSize: 12,
     fontWeight: '600',
     color: '#6B7280',
+  },
+  completedText: {
+    color: '#059669',
   },
   progressSection: {
     width: '100%',

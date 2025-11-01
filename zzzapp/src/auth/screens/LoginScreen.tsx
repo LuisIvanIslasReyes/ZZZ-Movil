@@ -81,7 +81,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 placeholderTextColor="#9CA3AF"
                 value={username}
                 onChangeText={setUsername}
-                placeholder="userexample"
+                placeholder="Usuario"
                 autoCapitalize="none"
                 autoComplete="username"
                 editable={!isLoading}

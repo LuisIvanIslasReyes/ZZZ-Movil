@@ -5,15 +5,20 @@ from rest_framework.response import Response
 from django.utils import timezone
 from django.db.models import Avg, Q
 from .models import Goal
-from .serializers import GoalSerializer, GoalProgressSerializer, GoalSummarySerializer
+from .serializers import GoalSerializer, GoalCreateSerializer, GoalProgressSerializer, GoalSummarySerializer
 
 
 class GoalViewSet(viewsets.ModelViewSet):
     """
     ViewSet para gestión de metas.
     """
-    serializer_class = GoalSerializer
     permission_classes = [IsAuthenticated]
+    
+    def get_serializer_class(self):
+        """Usar diferentes serializers según la acción."""
+        if self.action == 'create':
+            return GoalCreateSerializer
+        return GoalSerializer
     
     def get_queryset(self):
         """Filtrar metas del usuario autenticado."""
@@ -37,6 +42,19 @@ class GoalViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         """Asignar el usuario autenticado al crear una meta."""
         serializer.save(user=self.request.user)
+    
+    def create(self, request, *args, **kwargs):
+        """Sobrescribir create para devolver la meta con el serializador completo."""
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        
+        # Usar GoalSerializer para la respuesta
+        goal = Goal.objects.get(pk=serializer.instance.pk)
+        response_serializer = GoalSerializer(goal)
+        
+        headers = self.get_success_headers(response_serializer.data)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     
     @action(detail=True, methods=['post'])
     def update_progress(self, request, pk=None):

@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { apiClient } from '../api/config';
-import { LoginRequest, LoginResponse, User, AuthTokens } from '../types/auth.types';
+import { apiClient } from '../../api/config';
+import { LoginRequest, LoginResponse, User, AuthTokens } from '../../types/auth.types';
 
 // Claves para AsyncStorage
 const STORAGE_KEYS = {

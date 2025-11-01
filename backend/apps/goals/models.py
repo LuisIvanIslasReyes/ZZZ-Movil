@@ -16,6 +16,10 @@ class Goal(models.Model):
         ('hrv', 'Variabilidad Cardíaca'),
         ('sleep', 'Horas de Sueño'),
         ('productivity', 'Productividad'),
+        ('hydration', 'Hidratación'),
+        ('nutrition', 'Nutrición'),
+        ('weight', 'Peso'),
+        ('exercise', 'Ejercicio'),
     ]
     
     user = models.ForeignKey(

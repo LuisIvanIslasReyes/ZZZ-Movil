@@ -5,7 +5,7 @@ import { API_BASE_URL } from '../../IP';
 // Crea la instancia de axios
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
-  timeout: 10000,
+  timeout: 30000, // 30 segundos
   headers: {
     'Content-Type': 'application/json',
   },
