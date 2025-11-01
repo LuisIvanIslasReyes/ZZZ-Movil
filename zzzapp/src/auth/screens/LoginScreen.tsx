@@ -28,7 +28,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
-        {/* Header with Gradient */}
         <LinearGradient
           colors={['#0F3460', '#1e5a8e']}
           start={{ x: 0, y: 0 }}
@@ -42,11 +41,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           <Text style={styles.headerSubtitle}>Bienvenido</Text>
         </LinearGradient>
 
-        {/* Login Form */}
         <View style={styles.formContainer}>
           <Text style={styles.formTitle}>Iniciar Sesión</Text>
           
-          {/* Email Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Correo Electrónico</Text>
             <View style={styles.inputWrapper}>
@@ -64,7 +61,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             </View>
           </View>
 
-          {/* Password Input */}
           <View style={styles.inputContainer}>
             <Text style={styles.inputLabel}>Contraseña</Text>
             <View style={styles.inputWrapper}>
@@ -91,12 +87,10 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             </View>
           </View>
 
-          {/* Forgot Password */}
           <TouchableOpacity style={styles.forgotPassword}>
             <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 
-          {/* Login Button */}
           <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
             <LinearGradient
               colors={['#0F3460', '#1e5a8e']}
@@ -109,7 +103,6 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             </LinearGradient>
           </TouchableOpacity>
 
-          {/* Divider */}
           <View style={styles.divider}>
             <View style={styles.dividerLine} />
             <Text style={styles.dividerText}>o continúa con</Text>

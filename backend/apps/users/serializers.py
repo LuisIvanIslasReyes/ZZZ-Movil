@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
-from .models import User
+from .models import User, Employee
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -28,9 +28,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             'password_confirm',
             'first_name',
             'last_name',
-            'employee_id',
-            'department',
-            'location',
+            'role',
         ]
     
     def validate(self, attrs):
@@ -50,14 +48,62 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """
-    Serializer principal para el modelo User.
-    Expone información completa del perfil.
+    Serializer principal para el modelo User (solo autenticación).
     """
     full_name = serializers.CharField(read_only=True)
-    department_name = serializers.CharField(source='department.name', read_only=True, allow_null=True)
     
     class Meta:
         model = User
+        fields = [
+            'id',
+            'username',
+            'email',
+            'first_name',
+            'last_name',
+            'full_name',
+            'role',
+            'notifications_enabled',
+            'fatigue_alerts_enabled',
+            'ai_recommendations_enabled',
+            'sync_enabled',
+            'is_active',
+            'date_joined',
+        ]
+        read_only_fields = ['id', 'date_joined']
+
+
+class EmployeeSerializer(serializers.ModelSerializer):
+    """
+    Serializer para el modelo Employee (información laboral).
+    """
+    user = UserSerializer(read_only=True)
+    user_id = serializers.PrimaryKeyRelatedField(
+        queryset=User.objects.filter(role='employee'),
+        source='user',
+        write_only=True
+    )
+    department_name = serializers.CharField(source='department.name', read_only=True, allow_null=True)
+    full_name = serializers.CharField(read_only=True)
+    
+    class Meta:
+        model = Employee
+        fields = [
+            'employee_id',
+            'user',
+            'user_id',
+            'name',
+            'last_name',
+            'full_name',
+            'employee_number',
+            'department',
+            'department_name',
+            'location',
+            'hire_date',
+            'is_active',
+            'created_at',
+            'updated_at',
+        ]
+        read_only_fields = ['employee_id', 'created_at', 'updated_at']
         fields = [
             'id',
             'username',
