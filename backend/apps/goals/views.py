@@ -43,6 +43,10 @@ class GoalViewSet(viewsets.ModelViewSet):
         """Asignar el usuario autenticado al crear una meta."""
         serializer.save(user=self.request.user)
     
+    def perform_update(self, serializer):
+        """Al actualizar, el método save() del modelo verificará si se completó."""
+        serializer.save()
+    
     def create(self, request, *args, **kwargs):
         """Sobrescribir create para devolver la meta con el serializador completo."""
         serializer = self.get_serializer(data=request.data)

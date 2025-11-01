@@ -3,3 +3,4 @@ PS C:\Users\misam\OneDrive\Documentos\GitHub\ZZZ-Movil> .\venv\Scripts\Activate.
 
 
 cd backend; python manage.py runserver
+python manage.py runserver 0.0.0.0:8000
