@@ -1,21 +1,49 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView, ActivityIndicator, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useAuth } from '../../context/AuthContext';
 
 interface LoginScreenProps {
   onLogin: () => void;
 }
 
 const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const { login, isLoading, error, clearError } = useAuth();
 
-  const handleLogin = () => {
-    // Aquí irá la lógica de autenticación con la BD
-    // Por ahora solo llama a onLogin para cambiar el estado
-    onLogin();
+  // Mostrar error si existe
+  useEffect(() => {
+    if (error) {
+      Alert.alert('Error de autenticación', error, [
+        { text: 'OK', onPress: clearError }
+      ]);
+    }
+  }, [error]);
+
+  const handleLogin = async () => {
+    // Validaciones básicas
+    if (!username.trim()) {
+      Alert.alert('Error', 'Por favor ingresa tu nombre de usuario');
+      return;
+    }
+
+    if (!password) {
+      Alert.alert('Error', 'Por favor ingresa tu contraseña');
+      return;
+    }
+
+    try {
+      await login(username.trim(), password);
+      // Si el login es exitoso, el AuthContext actualizará isAuthenticated
+      // y la navegación se manejará automáticamente en App.tsx
+      onLogin();
+    } catch (err) {
+      // El error ya se maneja en el useEffect
+      console.error('Error en handleLogin:', err);
+    }
   };
 
   return (
@@ -45,18 +73,17 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           <Text style={styles.formTitle}>Iniciar Sesión</Text>
           
           <View style={styles.inputContainer}>
-            <Text style={styles.inputLabel}>Correo Electrónico</Text>
+            <Text style={styles.inputLabel}>Usuario</Text>
             <View style={styles.inputWrapper}>
-              <MaterialCommunityIcons name="email-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+              <MaterialCommunityIcons name="account-outline" size={20} color="#6B7280" style={styles.inputIcon} />
               <TextInput
                 style={styles.input}
-                placeholder="correo@ejemplo.com"
                 placeholderTextColor="#9CA3AF"
-                value={email}
-                onChangeText={setEmail}
-                keyboardType="email-address"
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="none"
-                autoComplete="email"
+                autoComplete="username"
+                editable={!isLoading}
               />
             </View>
           </View>
@@ -73,10 +100,12 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
                 onChangeText={setPassword}
                 secureTextEntry={!showPassword}
                 autoCapitalize="none"
+                editable={!isLoading}
               />
               <TouchableOpacity 
                 onPress={() => setShowPassword(!showPassword)}
                 style={styles.eyeIcon}
+                disabled={isLoading}
               >
                 <MaterialCommunityIcons 
                   name={showPassword ? "eye-outline" : "eye-off-outline"} 
@@ -91,15 +120,28 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
             <Text style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+          <TouchableOpacity 
+            style={[styles.loginButton, isLoading && styles.loginButtonDisabled]} 
+            onPress={handleLogin}
+            disabled={isLoading}
+          >
             <LinearGradient
-              colors={['#0F3460', '#1e5a8e']}
+              colors={isLoading ? ['#9CA3AF', '#6B7280'] : ['#0F3460', '#1e5a8e']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.loginButtonGradient}
             >
-              <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
-              <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
+              {isLoading ? (
+                <>
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                  <Text style={styles.loginButtonText}>Iniciando sesión...</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.loginButtonText}>Iniciar Sesión</Text>
+                  <MaterialCommunityIcons name="arrow-right" size={20} color="#FFFFFF" />
+                </>
+              )}
             </LinearGradient>
           </TouchableOpacity>
 
@@ -217,6 +259,9 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: 'hidden',
     marginBottom: 24,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
   },
   loginButtonGradient: {
     flexDirection: 'row',
