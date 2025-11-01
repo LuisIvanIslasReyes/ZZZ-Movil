@@ -3,14 +3,54 @@ from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import authenticate
 from .models import User
 from .serializers import (
     UserSerializer,
+    UserRegisterSerializer,
     UserUpdateSerializer,
     UserLoginSerializer,
     NotificationSettingsSerializer
 )
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def register_view(request):
+    """
+    Endpoint de registro de nuevos usuarios.
+    Retorna JWT tokens y datos del usuario creado.
+    
+    POST /api/v1/auth/register/
+    Body: {
+        "username": "usuario",
+        "email": "user@example.com",
+        "password": "password123",
+        "password_confirm": "password123",
+        "first_name": "Nombre",
+        "last_name": "Apellido",
+        "employee_id": "EMP001",
+        "department": 1,
+        "location": "Oficina Central"
+    }
+    """
+    serializer = UserRegisterSerializer(data=request.data)
+    
+    if serializer.is_valid():
+        user = serializer.save()
+        
+        # Generar tokens JWT
+        refresh = RefreshToken.for_user(user)
+        
+        return Response({
+            'refresh': str(refresh),
+            'access': str(refresh.access_token),
+            'user': UserSerializer(user).data,
+            'message': 'Usuario registrado exitosamente.'
+        }, status=status.HTTP_201_CREATED)
+    
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['POST'])
@@ -66,6 +106,38 @@ def logout_view(request):
         {'message': 'Sesión cerrada exitosamente.'},
         status=status.HTTP_200_OK
     )
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def refresh_token_view(request):
+    """
+    Endpoint para refrescar el access token usando el refresh token.
+    
+    POST /api/v1/auth/refresh/
+    Body: {"refresh": "refresh_token_here"}
+    """
+    refresh_token = request.data.get('refresh')
+    
+    if not refresh_token:
+        return Response(
+            {'error': 'Se requiere el refresh token.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    try:
+        refresh = RefreshToken(refresh_token)
+        
+        return Response({
+            'access': str(refresh.access_token),
+            'message': 'Token refrescado exitosamente.'
+        }, status=status.HTTP_200_OK)
+    
+    except TokenError as e:
+        return Response(
+            {'error': 'Refresh token inválido o expirado.'},
+            status=status.HTTP_401_UNAUTHORIZED
+        )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -185,3 +257,56 @@ class UserViewSet(viewsets.ModelViewSet):
             {'message': 'Contraseña actualizada exitosamente.'},
             status=status.HTTP_200_OK
         )
+    
+    @action(detail=False, methods=['get'])
+    def employees(self, request):
+        """
+        Lista todos los empleados (según permisos del usuario).
+        
+        GET /api/v1/users/employees/
+        Filtros opcionales:
+        - ?role=employee
+        - ?department=1
+        - ?is_active=true
+        """
+        queryset = self.get_queryset()
+        
+        # Filtros opcionales
+        role = request.query_params.get('role')
+        department_id = request.query_params.get('department')
+        is_active = request.query_params.get('is_active')
+        
+        if role:
+            queryset = queryset.filter(role=role)
+        if department_id:
+            queryset = queryset.filter(department_id=department_id)
+        if is_active is not None:
+            queryset = queryset.filter(is_active=is_active.lower() == 'true')
+        
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['post'])
+    def fcm_token(self, request):
+        """
+        Actualiza el FCM token del usuario para notificaciones push.
+        
+        POST /api/v1/users/fcm_token/
+        Body: {"fcm_token": "token_here"}
+        """
+        fcm_token = request.data.get('fcm_token')
+        
+        if not fcm_token:
+            return Response(
+                {'error': 'Se requiere el campo fcm_token.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        
+        user = request.user
+        user.fcm_token = fcm_token
+        user.save()
+        
+        return Response({
+            'message': 'FCM token actualizado exitosamente.',
+            'fcm_token': fcm_token
+        }, status=status.HTTP_200_OK)

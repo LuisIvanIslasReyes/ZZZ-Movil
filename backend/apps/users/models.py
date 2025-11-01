@@ -75,6 +75,14 @@ class User(AbstractUser):
         verbose_name='Sincronización Habilitada'
     )
     
+    # Firebase Cloud Messaging Token (para notificaciones push)
+    fcm_token = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name='FCM Token',
+        help_text='Token de Firebase Cloud Messaging para notificaciones push'
+    )
+    
     # Metadata
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Fecha de Creación')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Última Actualización')
