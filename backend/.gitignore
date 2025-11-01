@@ -1,0 +1,154 @@
+# Python# Environment variables
+
+*.py[cod].env
+
+*$py.class.env.local
+
+*.so.env.*.local
+
+.Python
+
+build/# Python
+
+develop-eggs/__pycache__/
+
+dist/*.py[cod]
+
+downloads/*$py.class
+
+eggs/*.so
+
+.eggs/.Python
+
+lib/env/
+
+lib64/venv/
+
+parts/ENV/
+
+sdist/build/
+
+var/develop-eggs/
+
+wheels/dist/
+
+pip-wheel-metadata/downloads/
+
+share/python-wheels/eggs/
+
+*.egg-info/.eggs/
+
+.installed.cfglib/
+
+*.egglib64/
+
+MANIFESTparts/
+
+sdist/
+
+# Djangovar/
+
+*.logwheels/
+
+local_settings.py*.egg-info/
+
+db.sqlite3.installed.cfg
+
+db.sqlite3-journal*.egg
+
+/media
+
+/staticfiles# Django
+
+/static*.log
+
+local_settings.py
+
+# Virtual Environmentdb.sqlite3
+
+venv/db.sqlite3-journal
+
+env//media
+
+ENV//staticfiles
+
+env.bak/
+
+venv.bak/# IDEs
+
+.venv/.vscode/
+
+.idea/
+
+# Environment Variables*.swp
+
+.env*.swo
+
+.env.local*~
+
+.env.*.local
+
+# OS
+
+# IDE.DS_Store
+
+.vscode/Thumbs.db
+
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing
+.coverage
+htmlcov/
+.tox/
+.pytest_cache/
+nosetests.xml
+coverage.xml
+*.cover
+
+# Migrations (opcional - descomenta si no quieres versionar migraciones)
+# */migrations/*.py
+# !*/migrations/__init__.py
+
+# Backups
+backups/*.sql
+backups/*.dump
+
+# Cache
+__pycache__/
+*.pyc
+.cache/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# Celery
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
