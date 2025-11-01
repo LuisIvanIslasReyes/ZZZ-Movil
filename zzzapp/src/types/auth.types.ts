@@ -11,6 +11,24 @@ export interface User {
   ai_recommendations_enabled: boolean;
   sync_enabled: boolean;
   full_name?: string;
+  date_joined?: string;
+  is_active?: boolean;
+  employee_profile?: EmployeeProfile; // Perfil de empleado si el rol es 'employee'
+}
+
+export interface EmployeeProfile {
+  employee_id: string; // EMP-2025-0001
+  name: string;
+  last_name: string;
+  full_name: string;
+  employee_number?: string;
+  department?: number;
+  department_name?: string;
+  location?: string;
+  hire_date?: string;
+  is_active: boolean;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface LoginRequest {

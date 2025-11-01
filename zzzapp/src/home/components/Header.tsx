@@ -1,12 +1,18 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useAuth } from '../../context/AuthContext';
 
 const Header: React.FC = () => {
+  const { user } = useAuth();
+  
+  // Obtener el nombre del empleado o el nombre completo del usuario
+  const displayName = user?.employee_profile?.name || user?.first_name || user?.username || 'Usuario';
+  
   return (
     <View style={styles.header}>
       <View style={styles.leftContent}>
-        <Text style={styles.greeting}>Hola, User</Text>
+        <Text style={styles.greeting}>Hola, {displayName}</Text>
         <Text style={styles.shift}>Turno: 08:00 - 16:00</Text>
       </View>
       <View style={styles.rightContent}>

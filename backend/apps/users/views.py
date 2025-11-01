@@ -78,6 +78,9 @@ def login_view(request):
                 status=status.HTTP_403_FORBIDDEN
             )
         
+        # Optimizar consulta: cargar employee_profile y department de una vez
+        user = User.objects.select_related('employee_profile', 'employee_profile__department').get(pk=user.pk)
+        
         # Generar tokens JWT
         refresh = RefreshToken.for_user(user)
         
@@ -145,7 +148,7 @@ class UserViewSet(viewsets.ModelViewSet):
     ViewSet para gestión de usuarios.
     Endpoints CRUD para usuarios (solo administradores).
     """
-    queryset = User.objects.select_related('department').all()
+    queryset = User.objects.select_related('employee_profile', 'employee_profile__department').all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     
@@ -160,7 +163,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return self.queryset
         elif user.role == 'supervisor':
             # Supervisores ven usuarios de su departamento
-            return self.queryset.filter(department=user.department)
+            return self.queryset.filter(employee_profile__department=user.employee_profile.department)
         else:
             # Empleados solo se ven a sí mismos
             return self.queryset.filter(id=user.id)
@@ -172,7 +175,9 @@ class UserViewSet(viewsets.ModelViewSet):
         
         GET /api/v1/users/profile/
         """
-        serializer = self.get_serializer(request.user)
+        # Recargar usuario con employee_profile
+        user = User.objects.select_related('employee_profile', 'employee_profile__department').get(pk=request.user.pk)
+        serializer = self.get_serializer(user)
         return Response(serializer.data)
     
     @action(detail=False, methods=['put', 'patch'])

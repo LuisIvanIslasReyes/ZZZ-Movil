@@ -3,25 +3,46 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfileInfoItem from './ProfileInfoItem';
 import EditProfileModal from './EditProfileModal';
+import { useAuth } from '../../context/AuthContext';
 
 const UserInfoCard: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [userName, setUserName] = useState('Carlos Rodríguez');
+  const { user } = useAuth();
 
   const handleSave = (newName: string) => {
-    setUserName(newName);
     // Aquí irá la lógica para actualizar en la BD
+    console.log('Actualizar nombre:', newName);
   };
+
+  // Formatear fecha de ingreso
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'No especificada';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-MX', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  // Obtener datos del usuario o empleado
+  const displayName = user?.employee_profile?.full_name || user?.full_name || user?.username || 'Usuario';
+  const employeeId = user?.employee_profile?.employee_id || 'N/A';
+  const department = user?.employee_profile?.department_name || 'No asignado';
+  const location = user?.employee_profile?.location || 'No especificada';
+  const hireDate = formatDate(user?.employee_profile?.hire_date);
+  const email = user?.email || 'No especificado';
 
   return (
     <>
       <View style={styles.profileCard}>
         <View style={styles.userInfoHeader}>
           <View style={styles.userInfoLeft}>
-            <Text style={styles.userName}>{userName}</Text>
-            <Text style={styles.userEmail}>carlos.rodriguez@empresa.com</Text>
+            <Text style={styles.userName}>{displayName}</Text>
+            <Text style={styles.userEmail}>{email}</Text>
             <View style={styles.employeeIdContainer}>
-              <Text style={styles.employeeId}>EMP001234</Text>
+              <MaterialCommunityIcons name="badge-account" size={16} color="#0F3460" style={styles.badgeIcon} />
+              <Text style={styles.employeeId}>{employeeId}</Text>
             </View>
           </View>
           
@@ -34,17 +55,17 @@ const UserInfoCard: React.FC = () => {
         <ProfileInfoItem
           iconName="briefcase-outline"
           label="Departamento"
-          value="Operaciones - Turno Mañana"
+          value={department}
         />
         <ProfileInfoItem
           iconName="calendar"
           label="Fecha de Ingreso"
-          value="15 de Marzo, 2023"
+          value={hireDate}
         />
         <ProfileInfoItem
           iconName="map-marker"
           label="Ubicación"
-          value="Planta Industrial Norte"
+          value={location}
         />
       </View>
 
@@ -90,6 +111,15 @@ const styles = StyleSheet.create({
   },
   employeeIdContainer: {
     alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8EBF0',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  badgeIcon: {
+    marginRight: 4,
   },
   employeeId: {
     fontSize: 13,
