@@ -1,19 +1,47 @@
-import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal, Alert, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 interface EditProfileModalProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (name: string) => void;
+  onSave: (firstName: string, lastName: string) => void;
+  userData: {
+    firstName: string;
+    lastName: string;
+    email: string;
+    employeeId: string;
+    department: string;
+    location: string;
+  };
+  isLoading?: boolean;
 }
 
-const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, onSave }) => {
-  const [name, setName] = useState('Carlos Rodríguez');
+const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, onSave, userData, isLoading = false }) => {
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+
+  // Actualizar campos cuando se abre el modal o cambian los datos
+  useEffect(() => {
+    if (visible) {
+      setFirstName(userData.firstName || '');
+      setLastName(userData.lastName || '');
+    }
+  }, [visible, userData.firstName, userData.lastName]);
 
   const handleSave = () => {
-    onSave(name);
+    // Validar que no estén vacíos
+    if (!firstName.trim()) {
+      Alert.alert('Error', 'El nombre es requerido');
+      return;
+    }
+    if (!lastName.trim()) {
+      Alert.alert('Error', 'El apellido es requerido');
+      return;
+    }
+
+    onSave(firstName.trim(), lastName.trim());
     onClose();
   };
 
@@ -44,16 +72,31 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
 
           {/* Content */}
           <View style={styles.content}>
-            {/* Name - Editable */}
+            {/* First Name - Editable */}
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>Nombre Completo</Text>
+              <Text style={styles.inputLabel}>Nombre</Text>
               <View style={styles.inputWrapper}>
                 <MaterialCommunityIcons name="account-outline" size={20} color="#6B7280" style={styles.inputIcon} />
                 <TextInput
                   style={styles.input}
-                  value={name}
-                  onChangeText={setName}
+                  value={firstName}
+                  onChangeText={setFirstName}
                   placeholder="Ingresa tu nombre"
+                  placeholderTextColor="#9CA3AF"
+                />
+              </View>
+            </View>
+
+            {/* Last Name - Editable */}
+            <View style={styles.inputContainer}>
+              <Text style={styles.inputLabel}>Apellidos</Text>
+              <View style={styles.inputWrapper}>
+                <MaterialCommunityIcons name="account-outline" size={20} color="#6B7280" style={styles.inputIcon} />
+                <TextInput
+                  style={styles.input}
+                  value={lastName}
+                  onChangeText={setLastName}
+                  placeholder="Ingresa tus apellidos"
                   placeholderTextColor="#9CA3AF"
                 />
               </View>
@@ -64,17 +107,17 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               <Text style={styles.inputLabel}>Correo Electrónico</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
                 <MaterialCommunityIcons name="email-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
-                <Text style={styles.readOnlyText}>carlos.rodriguez@empresa.com</Text>
+                <Text style={styles.readOnlyText}>{userData.email}</Text>
                 <MaterialCommunityIcons name="lock" size={16} color="#9CA3AF" />
               </View>
             </View>
 
             {/* Employee ID - Read only */}
             <View style={styles.inputContainer}>
-              <Text style={styles.inputLabel}>ID de Usuario</Text>
+              <Text style={styles.inputLabel}>ID de Empleado</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
                 <MaterialCommunityIcons name="badge-account-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
-                <Text style={styles.readOnlyText}>EMP001234</Text>
+                <Text style={styles.readOnlyText}>{userData.employeeId}</Text>
                 <MaterialCommunityIcons name="lock" size={16} color="#9CA3AF" />
               </View>
             </View>
@@ -84,7 +127,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               <Text style={styles.inputLabel}>Departamento</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
                 <MaterialCommunityIcons name="briefcase-outline" size={20} color="#9CA3AF" style={styles.inputIcon} />
-                <Text style={styles.readOnlyText}>Operaciones - Turno Mañana</Text>
+                <Text style={styles.readOnlyText}>{userData.department}</Text>
                 <MaterialCommunityIcons name="lock" size={16} color="#9CA3AF" />
               </View>
             </View>
@@ -94,7 +137,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
               <Text style={styles.inputLabel}>Ubicación</Text>
               <View style={[styles.inputWrapper, styles.readOnlyInput]}>
                 <MaterialCommunityIcons name="map-marker" size={20} color="#9CA3AF" style={styles.inputIcon} />
-                <Text style={styles.readOnlyText}>Planta Industrial Norte</Text>
+                <Text style={styles.readOnlyText}>{userData.location}</Text>
                 <MaterialCommunityIcons name="lock" size={16} color="#9CA3AF" />
               </View>
             </View>
@@ -102,19 +145,33 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ visible, onClose, o
 
           {/* Footer Buttons */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+            <TouchableOpacity 
+              style={styles.cancelButton} 
+              onPress={onClose}
+              disabled={isLoading}
+            >
               <Text style={styles.cancelButtonText}>Cancelar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <TouchableOpacity 
+              style={styles.saveButton} 
+              onPress={handleSave}
+              disabled={isLoading}
+            >
               <LinearGradient
                 colors={['#0F3460', '#1e5a8e']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.saveButtonGradient}
               >
-                <MaterialCommunityIcons name="check" size={20} color="#FFFFFF" />
-                <Text style={styles.saveButtonText}>Guardar</Text>
+                {isLoading ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <>
+                    <MaterialCommunityIcons name="check" size={20} color="#FFFFFF" />
+                    <Text style={styles.saveButtonText}>Guardar</Text>
+                  </>
+                )}
               </LinearGradient>
             </TouchableOpacity>
           </View>

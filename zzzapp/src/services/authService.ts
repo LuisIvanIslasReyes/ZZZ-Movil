@@ -64,6 +64,26 @@ class AuthService {
   }
 
   /**
+   * Actualiza el perfil del empleado (name y last_name)
+   */
+  async updateEmployeeProfile(name: string, lastName: string): Promise<User> {
+    try {
+      const response = await apiClient.patch<User>('/users/update_employee_profile/', {
+        name,
+        last_name: lastName,
+      });
+      
+      // Actualizar el usuario almacenado con los nuevos datos
+      await this.saveUser(response.data);
+      
+      return response.data;
+    } catch (error: any) {
+      console.error('Error al actualizar perfil:', error.response?.data || error.message);
+      throw this.handleError(error);
+    }
+  }
+
+  /**
    * Refresca el access token usando el refresh token
    */
   async refreshToken(): Promise<string> {

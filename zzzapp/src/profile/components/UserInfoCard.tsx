@@ -1,17 +1,43 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfileInfoItem from './ProfileInfoItem';
 import EditProfileModal from './EditProfileModal';
 import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../services/authService';
 
 const UserInfoCard: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, updateUser } = useAuth();
 
-  const handleSave = (newName: string) => {
-    // Aquí irá la lógica para actualizar en la BD
-    console.log('Actualizar nombre:', newName);
+  const handleSave = async (firstName: string, lastName: string) => {
+    try {
+      setIsLoading(true);
+      
+      // Llamar al servicio para actualizar el perfil
+      const updatedUser = await authService.updateEmployeeProfile(firstName, lastName);
+      
+      // Actualizar el contexto con los nuevos datos
+      updateUser(updatedUser);
+      
+      // Cerrar el modal y mostrar mensaje de éxito
+      setModalVisible(false);
+      Alert.alert(
+        'Éxito',
+        'Tu perfil ha sido actualizado correctamente',
+        [{ text: 'OK' }]
+      );
+    } catch (error: any) {
+      console.error('Error al actualizar perfil:', error);
+      Alert.alert(
+        'Error',
+        error.message || 'No se pudo actualizar el perfil. Intenta de nuevo.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // Formatear fecha de ingreso
@@ -27,6 +53,8 @@ const UserInfoCard: React.FC = () => {
 
   // Obtener datos del usuario o empleado
   const displayName = user?.employee_profile?.full_name || user?.full_name || user?.username || 'Usuario';
+  const firstName = user?.employee_profile?.name || user?.first_name || '';
+  const lastName = user?.employee_profile?.last_name || user?.last_name || '';
   const employeeId = user?.employee_profile?.employee_id || 'N/A';
   const department = user?.employee_profile?.department_name || 'No asignado';
   const location = user?.employee_profile?.location || 'No especificada';
@@ -73,6 +101,15 @@ const UserInfoCard: React.FC = () => {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSave={handleSave}
+        userData={{
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          employeeId: employeeId,
+          department: department,
+          location: location,
+        }}
+        isLoading={isLoading}
       />
     </>
   );

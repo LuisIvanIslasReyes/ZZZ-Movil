@@ -217,3 +217,25 @@ class NotificationSettingsSerializer(serializers.ModelSerializer):
             'ai_recommendations_enabled',
             'sync_enabled',
         ]
+
+
+class EmployeeUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer para actualizar información del empleado.
+    Solo permite editar name y last_name.
+    """
+    class Meta:
+        model = Employee
+        fields = ['name', 'last_name']
+    
+    def validate_name(self, value):
+        """Validar que el nombre no esté vacío."""
+        if not value or not value.strip():
+            raise serializers.ValidationError('El nombre no puede estar vacío.')
+        return value.strip()
+    
+    def validate_last_name(self, value):
+        """Validar que el apellido no esté vacío."""
+        if not value or not value.strip():
+            raise serializers.ValidationError('El apellido no puede estar vacío.')
+        return value.strip()
