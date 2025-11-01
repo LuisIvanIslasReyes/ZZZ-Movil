@@ -84,9 +84,7 @@ const MetasScreen: React.FC = () => {
         }
       >
         <GoalsHeader onNewGoalPress={() => setModalVisible(true)} />
-        <OverallProgress />
-        
-        {/* Mostrar metas del usuario */}
+        <OverallProgress goals={goals} />
         {goals.length > 0 ? (
           goals.map((goal) => (
             <GoalCard 
@@ -105,7 +103,7 @@ const MetasScreen: React.FC = () => {
           </View>
         )}
         
-        <WeeklySummary />
+        <WeeklySummary goals={goals} />
         <Recommendations />
       </ScrollView>
 

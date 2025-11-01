@@ -1,16 +1,31 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { Goal } from '../services/goalsService';
 
-const OverallProgress: React.FC = () => {
+interface OverallProgressProps {
+  goals: Goal[];
+}
+
+const OverallProgress: React.FC<OverallProgressProps> = ({ goals }) => {
+  // Calcular metas en progreso (no completadas)
+  const goalsInProgress = goals.filter(goal => !goal.is_completed).length;
+  
+  // Calcular porcentaje promedio
+  const averageProgress = goals.length > 0
+    ? goals.reduce((sum, goal) => sum + parseFloat(goal.progress_percentage.toString()), 0) / goals.length
+    : 0;
+
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.leftContent}>
           <Text style={styles.title}>Progreso General</Text>
-          <Text style={styles.subtitle}>3 de 4 metas en progreso</Text>
+          <Text style={styles.subtitle}>
+            {goalsInProgress} de {goals.length} metas en progreso
+          </Text>
         </View>
         <View style={styles.rightContent}>
-          <Text style={styles.percentage}>62%</Text>
+          <Text style={styles.percentage}>{Math.round(averageProgress)}%</Text>
           <Text style={styles.label}>Promedio</Text>
         </View>
       </View>
