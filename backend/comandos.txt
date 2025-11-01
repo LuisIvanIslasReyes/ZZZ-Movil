@@ -1,0 +1,5 @@
+PS C:\Users\misam\OneDrive\Documentos\GitHub\ZZZ-Movil> python -m venv venv
+PS C:\Users\misam\OneDrive\Documentos\GitHub\ZZZ-Movil> .\venv\Scripts\Activate.ps1
+
+
+cd backend; python manage.py runserver

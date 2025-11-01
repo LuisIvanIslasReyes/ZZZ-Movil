@@ -17,6 +17,10 @@ class TaskViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar tareas del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return Task.objects.none()
+        
         queryset = Task.objects.filter(user=self.request.user).select_related('work_session', 'user')
         
         # Filtros opcionales

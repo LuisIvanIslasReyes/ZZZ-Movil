@@ -17,6 +17,10 @@ class AlertViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar alertas del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return Alert.objects.none()
+        
         queryset = Alert.objects.filter(user=self.request.user).select_related('metric')
         
         # Filtros opcionales

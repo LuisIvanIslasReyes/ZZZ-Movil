@@ -53,7 +53,7 @@ class UserSerializer(serializers.ModelSerializer):
     Serializer principal para el modelo User.
     Expone información completa del perfil.
     """
-    full_name = serializers.CharField(source='full_name', read_only=True)
+    full_name = serializers.CharField(read_only=True)
     department_name = serializers.CharField(source='department.name', read_only=True, allow_null=True)
     
     class Meta:

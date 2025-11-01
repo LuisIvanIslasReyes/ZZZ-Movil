@@ -151,6 +151,10 @@ class UserViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar usuarios según rol."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return self.queryset.none()
+        
         user = self.request.user
         if user.role == 'admin':
             return self.queryset

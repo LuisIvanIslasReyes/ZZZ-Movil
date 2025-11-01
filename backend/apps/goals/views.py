@@ -17,6 +17,10 @@ class GoalViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar metas del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return Goal.objects.none()
+        
         queryset = Goal.objects.filter(user=self.request.user)
         
         # Filtros opcionales

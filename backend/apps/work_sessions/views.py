@@ -21,6 +21,10 @@ class WorkSessionViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar sesiones del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return WorkSession.objects.none()
+        
         queryset = WorkSession.objects.filter(user=self.request.user).select_related('department')
         
         # Filtros opcionales
@@ -127,6 +131,10 @@ class ShiftIntervalViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar intervalos de sesiones del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return ShiftInterval.objects.none()
+        
         return ShiftInterval.objects.filter(
             work_session__user=self.request.user
         ).select_related('work_session')

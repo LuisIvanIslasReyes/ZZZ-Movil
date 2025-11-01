@@ -18,6 +18,10 @@ class MetricViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar métricas del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return Metric.objects.none()
+        
         return Metric.objects.filter(user=self.request.user).select_related('wearable', 'work_session', 'task')
     
     @action(detail=False, methods=['get'])

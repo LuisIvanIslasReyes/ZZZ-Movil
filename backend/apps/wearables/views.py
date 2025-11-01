@@ -125,6 +125,10 @@ class WearableAssignmentViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar asignaciones del usuario autenticado."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return WearableAssignment.objects.none()
+        
         queryset = WearableAssignment.objects.all().select_related('wearable', 'user')
         
         # Filtros opcionales

@@ -21,6 +21,7 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
+    url='http://127.0.0.1:8000/',
 )
 
 urlpatterns = [
@@ -28,8 +29,10 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     
     # API Documentation
-    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('docs/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui-alias'),
     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('swagger.json', schema_view.without_ui(cache_timeout=0), name='schema-json'),
     
     # API endpoints (sin versión v1 para coincidir con especificación)
     path('api/', include('apps.users.urls')),

@@ -22,6 +22,10 @@ class ReportViewSet(viewsets.ModelViewSet):
     
     def get_queryset(self):
         """Filtrar reportes según permisos del usuario."""
+        # Swagger fake view bypass
+        if getattr(self, 'swagger_fake_view', False):
+            return Report.objects.none()
+        
         user = self.request.user
         
         if user.role == 'admin':
