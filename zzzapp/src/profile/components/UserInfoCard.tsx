@@ -1,27 +1,76 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import ProfileInfoItem from './ProfileInfoItem';
 import EditProfileModal from './EditProfileModal';
+import { useAuth } from '../../context/AuthContext';
+import { authService } from '../../auth/services/authService';
 
 const UserInfoCard: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [userName, setUserName] = useState('Carlos Rodríguez');
+  const [isLoading, setIsLoading] = useState(false);
+  const { user, updateUser } = useAuth();
 
-  const handleSave = (newName: string) => {
-    setUserName(newName);
-    // Aquí irá la lógica para actualizar en la BD
+  const handleSave = async (firstName: string, lastName: string) => {
+    try {
+      setIsLoading(true);
+      
+      // Llamar al servicio para actualizar el perfil
+      const updatedUser = await authService.updateEmployeeProfile(firstName, lastName);
+      
+      // Actualizar el contexto con los nuevos datos
+      updateUser(updatedUser);
+      
+      // Cerrar el modal y mostrar mensaje de éxito
+      setModalVisible(false);
+      Alert.alert(
+        'Éxito',
+        'Tu perfil ha sido actualizado correctamente',
+        [{ text: 'OK' }]
+      );
+    } catch (error: any) {
+      console.error('Error al actualizar perfil:', error);
+      Alert.alert(
+        'Error',
+        error.message || 'No se pudo actualizar el perfil. Intenta de nuevo.',
+        [{ text: 'OK' }]
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
+
+  // Formatear fecha de ingreso
+  const formatDate = (dateString?: string) => {
+    if (!dateString) return 'No especificada';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('es-MX', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+  };
+
+  // Obtener datos del usuario o empleado
+  const displayName = user?.employee_profile?.full_name || user?.full_name || user?.username || 'Usuario';
+  const firstName = user?.employee_profile?.name || user?.first_name || '';
+  const lastName = user?.employee_profile?.last_name || user?.last_name || '';
+  const employeeId = user?.employee_profile?.employee_id || 'N/A';
+  const department = user?.employee_profile?.department_name || 'No asignado';
+  const location = user?.employee_profile?.location || 'No especificada';
+  const hireDate = formatDate(user?.employee_profile?.hire_date);
+  const email = user?.email || 'No especificado';
 
   return (
     <>
       <View style={styles.profileCard}>
         <View style={styles.userInfoHeader}>
           <View style={styles.userInfoLeft}>
-            <Text style={styles.userName}>{userName}</Text>
-            <Text style={styles.userEmail}>carlos.rodriguez@empresa.com</Text>
+            <Text style={styles.userName}>{displayName}</Text>
+            <Text style={styles.userEmail}>{email}</Text>
             <View style={styles.employeeIdContainer}>
-              <Text style={styles.employeeId}>EMP001234</Text>
+              <MaterialCommunityIcons name="badge-account" size={16} color="#0F3460" style={styles.badgeIcon} />
+              <Text style={styles.employeeId}>{employeeId}</Text>
             </View>
           </View>
           
@@ -34,17 +83,17 @@ const UserInfoCard: React.FC = () => {
         <ProfileInfoItem
           iconName="briefcase-outline"
           label="Departamento"
-          value="Operaciones - Turno Mañana"
+          value={department}
         />
         <ProfileInfoItem
           iconName="calendar"
           label="Fecha de Ingreso"
-          value="15 de Marzo, 2023"
+          value={hireDate}
         />
         <ProfileInfoItem
           iconName="map-marker"
           label="Ubicación"
-          value="Planta Industrial Norte"
+          value={location}
         />
       </View>
 
@@ -52,6 +101,15 @@ const UserInfoCard: React.FC = () => {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSave={handleSave}
+        userData={{
+          firstName: firstName,
+          lastName: lastName,
+          email: email,
+          employeeId: employeeId,
+          department: department,
+          location: location,
+        }}
+        isLoading={isLoading}
       />
     </>
   );
@@ -90,6 +148,15 @@ const styles = StyleSheet.create({
   },
   employeeIdContainer: {
     alignSelf: 'flex-start',
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8EBF0',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 8,
+  },
+  badgeIcon: {
+    marginRight: 4,
   },
   employeeId: {
     fontSize: 13,

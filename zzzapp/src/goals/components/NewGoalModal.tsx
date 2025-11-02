@@ -1,43 +1,96 @@
 import React, { useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Modal, ScrollView, Alert, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
+import { goalsService, CreateGoalData } from '../services/goalsService';
 
 interface NewGoalModalProps {
   visible: boolean;
   onClose: () => void;
-  onSave: (goal: { title: string; category: string; target: string; unit: string }) => void;
+  onSave: () => void;
 }
 
 const NewGoalModal: React.FC<NewGoalModalProps> = ({ visible, onClose, onSave }) => {
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('');
+  const [categoryValue, setCategoryValue] = useState('');
   const [target, setTarget] = useState('');
   const [unit, setUnit] = useState('');
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
+  // Categorías que coinciden con el backend
   const categories = [
-    { label: 'Actividad Física', value: 'actividad', icon: 'run' },
-    { label: 'Hidratación', value: 'hidratacion', icon: 'water' },
-    { label: 'Descanso', value: 'descanso', icon: 'sleep' },
-    { label: 'Nutrición', value: 'nutricion', icon: 'food-apple' },
-    { label: 'Bienestar Mental', value: 'mental', icon: 'brain' },
+    { label: 'Pasos', value: 'steps', icon: 'walk' },
+    { label: 'Frecuencia Cardíaca', value: 'heart_rate', icon: 'heart-pulse' },
+    { label: 'Recuperación', value: 'recovery', icon: 'sleep' },
+    { label: 'Nivel de Estrés', value: 'stress', icon: 'head-lightbulb-outline' },
+    { label: 'Nivel de Actividad', value: 'activity', icon: 'run' },
+    { label: 'Variabilidad Cardíaca', value: 'hrv', icon: 'chart-line-variant' },
+    { label: 'Horas de Sueño', value: 'sleep', icon: 'power-sleep' },
+    { label: 'Productividad', value: 'productivity', icon: 'briefcase-check' },
+    { label: 'Hidratación', value: 'hydration', icon: 'water' },
+    { label: 'Nutrición', value: 'nutrition', icon: 'food-apple' },
+    { label: 'Peso', value: 'weight', icon: 'scale-bathroom' },
+    { label: 'Ejercicio', value: 'exercise', icon: 'dumbbell' },
   ];
 
-  const handleSave = () => {
-    if (title && category && target && unit) {
-      onSave({ title, category, target, unit });
+  const handleSave = async () => {
+    // Validar campos
+    if (!title.trim()) {
+      Alert.alert('Error', 'Por favor ingresa un título para la meta');
+      return;
+    }
+    if (!categoryValue) {
+      Alert.alert('Error', 'Por favor selecciona una categoría');
+      return;
+    }
+    if (!target.trim()) {
+      Alert.alert('Error', 'Por favor ingresa un objetivo');
+      return;
+    }
+    if (!unit.trim()) {
+      Alert.alert('Error', 'Por favor ingresa una unidad');
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      
+      const goalData: CreateGoalData = {
+        title: title.trim(),
+        category: categoryValue,
+        target: target.trim(),
+        unit: unit.trim(),
+      };
+
+      const result = await goalsService.createGoal(goalData);
+      console.log('✓ Meta creada exitosamente:', result.title);
+      
       // Reset form
       setTitle('');
       setCategory('');
+      setCategoryValue('');
       setTarget('');
       setUnit('');
+      
+      Alert.alert('Éxito', 'Meta creada exitosamente');
+      onSave(); // Actualizar la lista
       onClose();
+    } catch (error: any) {
+      console.error('Error al crear meta:', error.message);
+      Alert.alert(
+        'Error', 
+        error.message || 'No se pudo crear la meta.'
+      );
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleCategorySelect = (value: string, label: string) => {
     setCategory(label);
+    setCategoryValue(value);
     setShowCategoryPicker(false);
   };
 
@@ -156,19 +209,33 @@ const NewGoalModal: React.FC<NewGoalModalProps> = ({ visible, onClose, onSave })
 
           {/* Footer Buttons */}
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.cancelButton} onPress={onClose}>
+            <TouchableOpacity 
+              style={styles.cancelButton} 
+              onPress={onClose}
+              disabled={isLoading}
+            >
               <Text style={styles.cancelButtonText}>Cancelar</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <TouchableOpacity 
+              style={styles.saveButton} 
+              onPress={handleSave}
+              disabled={isLoading}
+            >
               <LinearGradient
                 colors={['#0F3460', '#1e5a8e']}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 0 }}
                 style={styles.saveButtonGradient}
               >
-                <MaterialCommunityIcons name="check" size={20} color="#FFFFFF" />
-                <Text style={styles.saveButtonText}>Crear Meta</Text>
+                {isLoading ? (
+                  <ActivityIndicator color="#FFFFFF" size="small" />
+                ) : (
+                  <>
+                    <MaterialCommunityIcons name="check" size={20} color="#FFFFFF" />
+                    <Text style={styles.saveButtonText}>Crear Meta</Text>
+                  </>
+                )}
               </LinearGradient>
             </TouchableOpacity>
           </View>

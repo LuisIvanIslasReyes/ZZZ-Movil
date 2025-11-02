@@ -1,8 +1,14 @@
 {
-  "devDependencies": {
-    "autoprefixer": "^10.4.21",
-    "daisyui": "^5.4.2",
-    "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.16"
+  "name": "zzz-movil",
+  "private": true,
+  "workspaces": [
+    "frontend/admin-panel",
+    "zzzapp"
+  ],
+  "scripts": {
+    "dev:admin": "cd frontend/admin-panel && npm run dev",
+    "dev:mobile": "cd zzzapp && npm start",
+    "build:admin": "cd frontend/admin-panel && npm run build",
+    "install:all": "npm install && cd frontend/admin-panel && npm install && cd ../../zzzapp && npm install"
   }
 }

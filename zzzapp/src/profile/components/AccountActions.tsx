@@ -1,16 +1,37 @@
-import React, { useContext } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
+import React from 'react';
+import { StyleSheet, Text, View, TouchableOpacity, Alert } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
-import { AuthContext } from '../../navigation/RootNavigator';
+import { useAuth } from '../../context/AuthContext';
 
 const AccountActions: React.FC = () => {
-  const { logout } = useContext(AuthContext);
+  const { logout } = useAuth();
+
+  const handleLogout = () => {
+    Alert.alert(
+      'Cerrar Sesión',
+      '¿Estás seguro de que deseas cerrar sesión?',
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Cerrar Sesión', 
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await logout();
+            } catch (error) {
+              console.error('Error al cerrar sesión:', error);
+            }
+          }
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
       <View style={styles.divider} />
       
-      <TouchableOpacity style={styles.actionButton} onPress={logout}>
+      <TouchableOpacity style={styles.actionButton} onPress={handleLogout}>
         <MaterialCommunityIcons name="logout" size={20} color="#EF4444" />
         <Text style={styles.actionTextDanger}>Cerrar Sesión</Text>
       </TouchableOpacity>

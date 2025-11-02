@@ -1,8 +1,22 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { Goal } from '../services/goalsService';
 
-const WeeklySummary: React.FC = () => {
+interface WeeklySummaryProps {
+  goals: Goal[];
+}
+
+const WeeklySummary: React.FC<WeeklySummaryProps> = ({ goals = [] }) => {
+  // Calcular metas completadas
+  const completedGoals = goals.filter(goal => goal.is_completed);
+  const completedCount = completedGoals.length;
+  
+  // Calcular promedio de cumplimiento
+  const completionPercentage = completedGoals.length > 0
+    ? completedGoals.reduce((sum, goal) => sum + parseFloat(goal.progress_percentage.toString()), 0) / completedGoals.length
+    : 0;
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -12,12 +26,12 @@ const WeeklySummary: React.FC = () => {
       
       <View style={styles.cardsContainer}>
         <View style={[styles.card, styles.cardGreen]}>
-          <Text style={styles.cardValue}>4</Text>
+          <Text style={styles.cardValue}>{completedCount}</Text>
           <Text style={styles.cardLabel}>Metas completadas</Text>
         </View>
         
         <View style={[styles.card, styles.cardGray]}>
-          <Text style={styles.cardValue}>85%</Text>
+          <Text style={styles.cardValue}>{Math.round(completionPercentage)}%</Text>
           <Text style={styles.cardLabel}>Promedio de cumplimiento</Text>
         </View>
       </View>

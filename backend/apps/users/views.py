@@ -5,13 +5,14 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError
 from django.contrib.auth import authenticate
-from .models import User
+from .models import User, Employee
 from .serializers import (
     UserSerializer,
     UserRegisterSerializer,
     UserUpdateSerializer,
     UserLoginSerializer,
-    NotificationSettingsSerializer
+    NotificationSettingsSerializer,
+    EmployeeUpdateSerializer
 )
 
 
@@ -77,6 +78,9 @@ def login_view(request):
                 {'error': 'La cuenta está desactivada.'},
                 status=status.HTTP_403_FORBIDDEN
             )
+        
+        # Optimizar consulta: cargar employee_profile y department de una vez
+        user = User.objects.select_related('employee_profile', 'employee_profile__department').get(pk=user.pk)
         
         # Generar tokens JWT
         refresh = RefreshToken.for_user(user)
@@ -145,7 +149,7 @@ class UserViewSet(viewsets.ModelViewSet):
     ViewSet para gestión de usuarios.
     Endpoints CRUD para usuarios (solo administradores).
     """
-    queryset = User.objects.select_related('department').all()
+    queryset = User.objects.select_related('employee_profile', 'employee_profile__department').all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
     
@@ -160,7 +164,7 @@ class UserViewSet(viewsets.ModelViewSet):
             return self.queryset
         elif user.role == 'supervisor':
             # Supervisores ven usuarios de su departamento
-            return self.queryset.filter(department=user.department)
+            return self.queryset.filter(employee_profile__department=user.employee_profile.department)
         else:
             # Empleados solo se ven a sí mismos
             return self.queryset.filter(id=user.id)
@@ -172,7 +176,9 @@ class UserViewSet(viewsets.ModelViewSet):
         
         GET /api/v1/users/profile/
         """
-        serializer = self.get_serializer(request.user)
+        # Recargar usuario con employee_profile
+        user = User.objects.select_related('employee_profile', 'employee_profile__department').get(pk=request.user.pk)
+        serializer = self.get_serializer(user)
         return Response(serializer.data)
     
     @action(detail=False, methods=['put', 'patch'])
@@ -194,6 +200,55 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             # Retornar datos completos del usuario actualizado
             user_serializer = UserSerializer(request.user)
+            return Response(user_serializer.data)
+        
+        return Response(
+            serializer.errors,
+            status=status.HTTP_400_BAD_REQUEST
+        )
+    
+    @action(detail=False, methods=['put', 'patch'])
+    def update_employee_profile(self, request):
+        """
+        Actualiza el perfil de empleado (name y last_name en Employee model).
+        Solo disponible para usuarios con rol 'employee'.
+        
+        PUT/PATCH /api/v1/users/update_employee_profile/
+        Body: {"name": "Nuevo", "last_name": "Apellido"}
+        """
+        user = request.user
+        
+        # Verificar que el usuario sea empleado y tenga perfil
+        if user.role != 'employee':
+            return Response(
+                {'error': 'Solo empleados pueden actualizar este perfil.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+        
+        if not hasattr(user, 'employee_profile'):
+            return Response(
+                {'error': 'No se encontró perfil de empleado.'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+        
+        # Actualizar el perfil de empleado
+        serializer = EmployeeUpdateSerializer(
+            user.employee_profile,
+            data=request.data,
+            partial=True
+        )
+        
+        if serializer.is_valid():
+            serializer.save()
+            
+            # Recargar usuario con datos actualizados
+            user = User.objects.select_related(
+                'employee_profile', 
+                'employee_profile__department'
+            ).get(pk=user.pk)
+            
+            # Retornar datos completos del usuario actualizado
+            user_serializer = UserSerializer(user)
             return Response(user_serializer.data)
         
         return Response(

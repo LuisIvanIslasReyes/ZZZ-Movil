@@ -49,8 +49,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class UserSerializer(serializers.ModelSerializer):
     """
     Serializer principal para el modelo User (solo autenticación).
+    Incluye perfil de empleado si el usuario tiene rol 'employee'.
     """
     full_name = serializers.CharField(read_only=True)
+    employee_profile = serializers.SerializerMethodField()
     
     class Meta:
         model = User
@@ -68,8 +70,28 @@ class UserSerializer(serializers.ModelSerializer):
             'sync_enabled',
             'is_active',
             'date_joined',
+            'employee_profile',
         ]
         read_only_fields = ['id', 'date_joined']
+    
+    def get_employee_profile(self, obj):
+        """Retorna el perfil de empleado si existe."""
+        if obj.role == 'employee' and hasattr(obj, 'employee_profile'):
+            return {
+                'employee_id': obj.employee_profile.employee_id,
+                'name': obj.employee_profile.name,
+                'last_name': obj.employee_profile.last_name,
+                'full_name': obj.employee_profile.full_name,
+                'employee_number': obj.employee_profile.employee_number,
+                'department': obj.employee_profile.department_id,
+                'department_name': obj.employee_profile.department.name if obj.employee_profile.department else None,
+                'location': obj.employee_profile.location,
+                'hire_date': obj.employee_profile.hire_date,
+                'is_active': obj.employee_profile.is_active,
+                'created_at': obj.employee_profile.created_at,
+                'updated_at': obj.employee_profile.updated_at,
+            }
+        return None
 
 
 class EmployeeSerializer(serializers.ModelSerializer):
@@ -195,3 +217,25 @@ class NotificationSettingsSerializer(serializers.ModelSerializer):
             'ai_recommendations_enabled',
             'sync_enabled',
         ]
+
+
+class EmployeeUpdateSerializer(serializers.ModelSerializer):
+    """
+    Serializer para actualizar información del empleado.
+    Solo permite editar name y last_name.
+    """
+    class Meta:
+        model = Employee
+        fields = ['name', 'last_name']
+    
+    def validate_name(self, value):
+        """Validar que el nombre no esté vacío."""
+        if not value or not value.strip():
+            raise serializers.ValidationError('El nombre no puede estar vacío.')
+        return value.strip()
+    
+    def validate_last_name(self, value):
+        """Validar que el apellido no esté vacío."""
+        if not value or not value.strip():
+            raise serializers.ValidationError('El apellido no puede estar vacío.')
+        return value.strip()

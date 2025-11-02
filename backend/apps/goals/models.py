@@ -16,6 +16,10 @@ class Goal(models.Model):
         ('hrv', 'Variabilidad Cardíaca'),
         ('sleep', 'Horas de Sueño'),
         ('productivity', 'Productividad'),
+        ('hydration', 'Hidratación'),
+        ('nutrition', 'Nutrición'),
+        ('weight', 'Peso'),
+        ('exercise', 'Ejercicio'),
     ]
     
     user = models.ForeignKey(
@@ -107,11 +111,16 @@ class Goal(models.Model):
             return min((self.current_progress / self.target) * 100, 100)
         return 0
     
-    def update_progress(self, new_value):
-        """Actualiza el progreso y verifica si se completó."""
-        self.current_progress = new_value
+    def save(self, *args, **kwargs):
+        """Sobrescribe save para marcar automáticamente como completada."""
+        # Verificar si se completó la meta
         if self.current_progress >= self.target and not self.is_completed:
             self.is_completed = True
             from django.utils import timezone
             self.completed_at = timezone.now()
+        super().save(*args, **kwargs)
+    
+    def update_progress(self, new_value):
+        """Actualiza el progreso y verifica si se completó."""
+        self.current_progress = new_value
         self.save()

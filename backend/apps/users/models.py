@@ -190,8 +190,3 @@ class Employee(models.Model):
         if not self.employee_id:
             self.employee_id = Employee.objects.generate_employee_id()
         super().save(*args, **kwargs)
-    
-    @property
-    def full_name(self):
-        """Retorna el nombre completo del usuario."""
-        return self.get_full_name() or self.username
