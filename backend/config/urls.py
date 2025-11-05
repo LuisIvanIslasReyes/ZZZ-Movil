@@ -41,7 +41,6 @@ urlpatterns = [
     path('api/', include('apps.goals.urls')),
     path('api/', include('apps.departments.urls')),
     path('api/', include('apps.work_sessions.urls')),
-    path('api/', include('apps.tasks.urls')),
     path('api/', include('apps.wearables.urls')),
     path('api/', include('apps.reports.urls')),
 ]

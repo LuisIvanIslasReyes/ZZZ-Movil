@@ -6,12 +6,12 @@ from datetime import timedelta
 class WorkSession(models.Model):
     """
     Modelo para registrar sesiones de trabajo (turnos).
+    Optimizado para análisis de Machine Learning y predicciones.
     """
     SHIFT_CHOICES = [
-        ('morning', 'Mañana'),
-        ('afternoon', 'Tarde'),
-        ('night', 'Noche'),
-        ('custom', 'Personalizado'),
+        ('morning', 'Matutino'),
+        ('afternoon', 'Vespertino'),
+        ('night', 'Nocturno'),
     ]
     
     user = models.ForeignKey(
@@ -32,7 +32,8 @@ class WorkSession(models.Model):
         max_length=20,
         choices=SHIFT_CHOICES,
         verbose_name='Turno',
-        db_index=True
+        db_index=True,
+        help_text='Tipo de turno de trabajo'
     )
     
     start_time = models.DateTimeField(
@@ -49,6 +50,27 @@ class WorkSession(models.Model):
         default=True,
         verbose_name='Sesión Activa',
         db_index=True
+    )
+    
+    location = models.CharField(
+        max_length=100,
+        blank=True,
+        verbose_name='Ubicación',
+        help_text='Ubicación de trabajo: Oficina, Remoto, Planta, etc.'
+    )
+    
+    duration_minutes = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name='Duración (minutos)',
+        help_text='Duración calculada automáticamente al finalizar'
+    )
+    
+    productivity_rating = models.IntegerField(
+        null=True,
+        blank=True,
+        verbose_name='Calificación de Productividad',
+        help_text='Calificación subjetiva del usuario (1-5)'
     )
     
     notes = models.TextField(
@@ -68,6 +90,7 @@ class WorkSession(models.Model):
         indexes = [
             models.Index(fields=['user', 'is_active']),
             models.Index(fields=['start_time']),
+            models.Index(fields=['shift', '-start_time']),
         ]
     
     def __str__(self):
@@ -75,17 +98,23 @@ class WorkSession(models.Model):
     
     @property
     def duration(self):
-        """Calcula la duración de la sesión."""
+        """Calcula la duración de la sesión en horas."""
         if self.end_time:
             delta = self.end_time - self.start_time
             return delta.total_seconds() / 3600  # Retorna horas
         return None
     
     def end_session(self):
-        """Finaliza la sesión de trabajo."""
+        """Finaliza la sesión de trabajo y calcula la duración."""
         from django.utils import timezone
         self.end_time = timezone.now()
         self.is_active = False
+        
+        # Calcular duración en minutos
+        if self.start_time and self.end_time:
+            delta = self.end_time - self.start_time
+            self.duration_minutes = int(delta.total_seconds() / 60)
+        
         self.save()
 
 

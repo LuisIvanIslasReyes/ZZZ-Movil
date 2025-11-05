@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     'apps.goals',
     'apps.departments',
     'apps.work_sessions',
-    'apps.tasks',
     'apps.wearables',
     'apps.reports',
 ]
