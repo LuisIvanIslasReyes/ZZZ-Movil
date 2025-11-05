@@ -51,11 +51,13 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, onEdit, onDelete }) => {
             </View>
           </View>
         </View>
-        {onEdit && (
-          <TouchableOpacity onPress={() => onEdit(goal)}>
-            <MaterialCommunityIcons name="pencil" size={20} color="#718096" />
-          </TouchableOpacity>
-        )}
+        <View style={styles.headerActions}>
+          {onEdit && (
+            <TouchableOpacity onPress={() => onEdit(goal)} style={styles.actionButton}>
+              <MaterialCommunityIcons name="pencil" size={20} color="#718096" />
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
 
       {/* Progress Section */}
@@ -97,6 +99,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     flex: 1,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  actionButton: {
+    padding: 8,
   },
   iconContainer: {
     width: 48,

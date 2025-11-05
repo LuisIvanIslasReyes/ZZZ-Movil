@@ -1,17 +1,31 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { useStepsGoal } from '../hooks/useStepsGoal';
 
 const StepsCard: React.FC = () => {
-  const steps = 6420;
-  const goal = 8000;
-  const percentage = (steps / goal) * 100;
+  const { currentSteps, targetSteps, progressPercentage, isLoading } = useStepsGoal();
+  
+  const steps = currentSteps;
+  const goal = targetSteps;
+  const percentage = progressPercentage;
+
+  if (isLoading) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.loadingContent}>
+          <ActivityIndicator size="small" color="#10B981" />
+          <Text style={styles.loadingText}>Cargando pasos...</Text>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
       <View style={styles.content}>
         <View style={styles.leftContent}>
-          <Text style={styles.title}>Pasos de Hoy</Text>
+          <Text style={styles.title}>Pasos Hoy</Text>
           <Text style={styles.steps}>{steps.toLocaleString()}</Text>
           <Text style={styles.goal}>Meta: {goal.toLocaleString()}</Text>
         </View>
@@ -37,6 +51,17 @@ const styles = StyleSheet.create({
     marginVertical: 12,
     borderWidth: 1,
     borderColor: '#E2E8F0',
+  },
+  loadingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 30,
+  },
+  loadingText: {
+    marginLeft: 12,
+    fontSize: 14,
+    color: '#718096',
   },
   content: {
     flexDirection: 'row',
