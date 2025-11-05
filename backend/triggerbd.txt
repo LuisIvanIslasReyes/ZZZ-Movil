@@ -1,0 +1,20 @@
+-- Función que verifica si la meta se ha cumplido
+CREATE OR REPLACE FUNCTION check_goal_completion()
+RETURNS TRIGGER AS $$
+BEGIN
+  IF NEW.current_progress >= NEW.target THEN
+    NEW.is_completed := TRUE;
+    NEW.completed_at := NOW();
+  ELSE
+    NEW.is_completed := FALSE;
+    NEW.completed_at := NULL;
+  END IF;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Trigger que ejecuta la función antes de cada INSERT o UPDATE
+CREATE TRIGGER trigger_goal_completion
+BEFORE INSERT OR UPDATE ON goals_goal
+FOR EACH ROW
+EXECUTE FUNCTION check_goal_completion();
