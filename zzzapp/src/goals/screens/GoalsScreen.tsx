@@ -13,35 +13,49 @@ const MetasScreen: React.FC = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [goals, setGoals] = useState<Goal[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
 
-  // Cargar metas al montar el componente
+  // Cargar metas al montar el componente y configurar refresco automático
   useEffect(() => {
-    loadGoals();
+    loadGoals(true);
+
+    // Recargar metas cada 5 segundos para reflejar cambios en tiempo real (sin mostrar loading)
+    const interval = setInterval(() => {
+      loadGoals(false);
+    }, 5000);
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(interval);
   }, []);
 
-  const loadGoals = async () => {
+  const loadGoals = async (showLoading: boolean = false) => {
     try {
-      setIsLoading(true);
+      if (showLoading) {
+        setIsLoading(true);
+      }
       const data = await goalsService.getUserGoals();
       setGoals(data);
     } catch (error: any) {
       console.error('Error al cargar metas:', error);
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+        setIsInitialLoad(false);
+      }
     }
   };
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await loadGoals();
+    await loadGoals(false);
     setRefreshing(false);
   }, []);
 
   const handleSaveGoal = () => {
     // Recargar las metas después de crear una nueva
-    loadGoals();
+    loadGoals(false);
   };
 
   const handleEditGoal = (goal: Goal) => {
@@ -52,7 +66,7 @@ const MetasScreen: React.FC = () => {
   const handleDeleteGoal = async (goalId: number) => {
     try {
       await goalsService.deleteGoal(goalId);
-      loadGoals(); // Recargar lista
+      loadGoals(false); // Recargar lista
     } catch (error: any) {
       console.error('Error al eliminar meta:', error);
     }

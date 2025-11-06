@@ -2,7 +2,7 @@ import { Platform } from 'react-native';
 
 // Configuración de la IP del servidor backend
 // Cambia esta IP según tu red local
-export const SERVER_IP = '192.168.1.181';
+export const SERVER_IP = '172.18.5.76';
 export const SERVER_PORT = '8000';
 
 // Función para obtener la URL base según la plataforma

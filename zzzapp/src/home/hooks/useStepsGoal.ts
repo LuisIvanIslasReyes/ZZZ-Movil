@@ -21,14 +21,17 @@ export const useStepsGoal = (): StepsGoalData => {
   const [targetSteps, setTargetSteps] = useState<number>(0);
   const [progressPercentage, setProgressPercentage] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isInitialLoad, setIsInitialLoad] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   
   // Obtener el flag de refresco desde el contexto
   const { refreshGoalsFlag } = useGoalsRefresh();
 
-  const fetchStepsGoal = async () => {
+  const fetchStepsGoal = async (showLoading: boolean = false) => {
     try {
-      setIsLoading(true);
+      if (showLoading) {
+        setIsLoading(true);
+      }
       setError(null);
 
       // Obtener todas las metas del usuario
@@ -61,13 +64,24 @@ export const useStepsGoal = (): StepsGoalData => {
       setTargetSteps(8000);
       setProgressPercentage(0);
     } finally {
-      setIsLoading(false);
+      if (showLoading) {
+        setIsLoading(false);
+        setIsInitialLoad(false);
+      }
     }
   };
 
-  // Cargar datos al montar el componente y cuando se refresca
+  // Cargar datos al montar el componente, cuando se refresca y cada 5 segundos
   useEffect(() => {
-    fetchStepsGoal();
+    fetchStepsGoal(true);
+
+    // Recargar progreso de pasos cada 5 segundos para reflejar cambios en tiempo real (sin mostrar loading)
+    const interval = setInterval(() => {
+      fetchStepsGoal(false);
+    }, 5000);
+
+    // Limpiar el intervalo al desmontar el componente
+    return () => clearInterval(interval);
   }, [refreshGoalsFlag]);
 
   return {
