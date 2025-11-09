@@ -65,7 +65,7 @@ export const useStepsGoal = (): StepsGoalData => {
       setProgressPercentage(0);
     } finally {
       if (showLoading) {
-        setIsLoading(false);
+         setIsLoading(false);
         setIsInitialLoad(false);
       }
     }

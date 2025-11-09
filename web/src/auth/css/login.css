@@ -1,0 +1,243 @@
+/* Estilos para Login - Diseño web profesional */
+
+.login-bg {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0F3460 0%, #1e5a8e 50%, #E8EBF0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+/* Header integrado en el formulario */
+.login-header {
+  text-align: center;
+  margin-bottom: 32px;
+  color: #0F3460;
+}
+
+.login-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #0F3460 0%, #1e5a8e 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px auto;
+  color: #fff;
+  box-shadow: 0 8px 24px rgba(15, 52, 96, 0.25);
+}
+
+.login-title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #0F3460;
+}
+
+.login-subtitle {
+  font-size: 15px;
+  color: #6B7280;
+  font-weight: 500;
+}
+
+/* Formulario */
+.login-form {
+  background: #FFFFFF;
+  padding: 40px 36px;
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(15, 52, 96, 0.15);
+  width: 100%;
+  max-width: 440px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-title {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0F3460;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+/* Grupos de input */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.input-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+  margin-left: 4px;
+}
+
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #F9FAFB;
+  border-radius: 12px;
+  border: 2px solid #E2E8F0;
+  padding: 0 16px;
+  height: 52px;
+  transition: all 0.2s ease;
+}
+
+.input-wrapper:focus-within {
+  background: #FFFFFF;
+  border-color: #0F3460;
+  box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.1);
+}
+
+.input-icon {
+  color: #6B7280;
+  margin-right: 12px;
+}
+
+.input-wrapper input {
+  flex: 1;
+  border: none;
+  font-size: 15px;
+  color: #0F3460;
+  background: transparent;
+  outline: none;
+}
+
+.input-wrapper input::placeholder {
+  color: #9CA3AF;
+}
+
+.eye-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  color: #6B7280;
+}
+
+.eye-btn:hover {
+  color: #0F3460;
+}
+
+/* Enlace de olvidaste contraseña */
+.forgot-password {
+  text-align: right;
+  margin-bottom: 4px;
+}
+
+.forgot-password a {
+  color: #0F3460;
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.forgot-password a:hover {
+  text-decoration: underline;
+}
+
+/* Botón de login con degradado */
+.login-btn {
+  background: linear-gradient(90deg, #0F3460 0%, #1e5a8e 100%);
+  color: #fff;
+  font-weight: 700;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 12px rgba(15, 52, 96, 0.3);
+}
+
+.login-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(15, 52, 96, 0.4);
+}
+
+.login-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.login-btn:disabled {
+  background: linear-gradient(90deg, #9CA3AF 0%, #6B7280 100%);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* Divider */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #E2E8F0;
+}
+
+.divider span {
+  color: #6B7280;
+  font-size: 13px;
+}
+
+/* Botón biométrico */
+.biometric-btn {
+  background: #F9FAFB;
+  border: 2px solid #E2E8F0;
+  border-radius: 12px;
+  padding: 12px 16px;
+  color: #0F3460;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.biometric-btn:hover {
+  background: #FFFFFF;
+  border-color: #0F3460;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(15, 52, 96, 0.1);
+}
+
+/* Sección de ayuda */
+.help-section {
+  background: #FEF3C7;
+  border-left: 4px solid #F59E0B;
+  border-radius: 8px;
+  padding: 14px 16px;
+  color: #92400E;
+  font-size: 13px;
+  line-height: 18px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 0;
+}
+
+.help-section svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
